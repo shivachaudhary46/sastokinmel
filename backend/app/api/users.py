@@ -20,19 +20,7 @@ hasher = PasswordHash.recommended()
 
 # @router.post("/admin")
 # def create_admin(session: SessionDep): 
-#     user_data1 = UserCreate(
-#         username="shivachaudhary",
-#         full_name="shiva chaudhary", 
-#         email="shivachaudhary4116@gmail.com",
-#         password="$argon2id$v=19$m=65536,t=3,p=4$6K7I9D8USPqkqf9CTcuBlw$fmB+5XjNhuVxonRu8mMmbY7G/1u+uAkbqD7cemil5VYhash", 
-#     )
-#     user_data2 = UserCreate(
-#         username="chandansharma", 
-#         email="chandansha198@gmail.com",
-#         full_name="Chandan Sharma Thakur", 
-#         password="$argon2id$v=19$m=65536,t=3,p=4$76dFUng28Em3Beohh4H1tg$0leC7cuJAaNjugSL3L6sctDWIQWSelZHpJ3TB0lTd0Y"
-#     )
-
+#    
 #     admin1 = User(
 #         role="admin", 
 #         username=user_data1.username,
