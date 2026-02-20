@@ -4,7 +4,8 @@ from app.models.models import User, Product, Offer, Referral
 from app.models.schemas import ProductCreate, ProductResponse, OfferCreate, OfferResponse, ReferralResponse, ReferralCreate
 from app.auth.oauth import role_required
 from app.loggers.logger import logger
-from app.utilities.crud import get_existing_product, create_product, create_offer, get_exisiting_offer, get_existing_referral, create_referral 
+from app.utilities.crud import get_existing_product, create_product, create_offer, get_exisiting_offer, get_existing_referral, create_referral, get_existing_all_product, get_all_offer_on_product
+from typing import List
 
 router = APIRouter(
     prefix="/product",
@@ -40,7 +41,19 @@ def create_new_product(product_data: ProductCreate, session: SessionDep, user: U
     except Exception as e:
         print(f"Error creating categories: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
-    
+
+'''This needs to be checked, there is problem with the model'''
+@router.get("/", response_model=List[ProductResponse])
+def get_all_product(session: SessionDep): 
+    try: 
+        all_product = get_existing_all_product(session)
+        return all_product
+    except HTTPException: 
+        raise
+    except Exception as e: 
+        print(f"Error fetching all categories: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
 @router.post("/offer", response_model=OfferResponse)
 def create_offer_with_product(offer_data: OfferCreate, session: SessionDep, user: User = Depends(role_required(["admin"]))):
     """Create a new offer with the different merchant"""
@@ -74,6 +87,16 @@ def create_offer_with_product(offer_data: OfferCreate, session: SessionDep, user
         print(f"Error creating offer: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
     
+@router.get("/offer", response_model=List[OfferResponse])
+def get_all_offer(session: SessionDep, product_id: int):
+    try: 
+        all_product = get_all_offer_on_product(session, product_id)
+        return all_product
+    except HTTPException: 
+        raise
+    except Exception as e: 
+        print(f"Error fetching all categories: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
  
 @router.post("/referral", response_model=ReferralResponse)
 def create_referral_with_product(referral_data: ReferralCreate, session: SessionDep, user: User = Depends(role_required(["admin"]))):
