@@ -1,21 +1,11 @@
+import enum 
+
 from typing import List, Optional
 from datetime import datetime
 from decimal import Decimal
-import enum 
-from sqlalchemy import (
-    String, 
-    Integer, 
-    ForeignKey, 
-    DateTime, 
-    Boolean, 
-    Numeric, 
-    Enum as SAEnum, 
-    Text
-)
+from sqlalchemy import ( String, Integer, ForeignKey, DateTime, Boolean, Numeric, Enum as SAEnum, Text )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-
-class Base(DeclarativeBase): 
-    pass 
+from ..db.database import Base 
 
 class RoleEnum(enum.Enum): 
     user = "user"
