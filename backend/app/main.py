@@ -2,15 +2,14 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI 
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.db.database import create_db_and_tables
-from app.api import (
+from backend.app.db.database import create_table
+from backend.app.api import (
     users, auth, categories, product, merchant
 )
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    create_db_and_tables()
+    create_table()
     yield
 
 app = FastAPI(

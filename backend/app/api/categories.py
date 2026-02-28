@@ -1,13 +1,11 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, Query
-from app.db.database import SessionDep
-from app.models.schemas import CategoryCreate, CategoryResponse
-from app.models.models import User, Category
-from app.auth.oauth import role_required
-from app.utilities.crud import get_category_by_name, create_category, get_all_products_by_category
-from app.loggers.logger import logger
+from fastapi import APIRouter, HTTPException, Depends, Query
+from backend.app.db.database import SessionDep
+from backend.app.models.schemas import CategoryCreate, CategoryResponse
+from backend.app.models.models import User, Category
+from backend.app.auth.oauth import role_required
+from backend.app.utilities.crud import get_category_by_name, create_category, get_all_products_by_category
+from backend.app.loggers.logger import logger
 from typing import Annotated
-
-from typing import List
 
 router = APIRouter(
     prefix="/categories",

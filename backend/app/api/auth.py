@@ -1,16 +1,13 @@
-# auth.py
-
-from fastapi import APIRouter, HTTPException, Depends
-from fastapi.security import OAuth2PasswordRequestForm
+import os
 from typing import Annotated
 from datetime import timedelta
-import os
 from dotenv import load_dotenv
-
-from app.models.schemas import Token, UserResponse
-from app.models.models import User
-from app.auth.oauth import authenticate_user, create_access_token, get_current_user
-from app.db.database import SessionDep
+from fastapi import APIRouter, HTTPException, Depends
+from fastapi.security import OAuth2PasswordRequestForm
+from backend.app.models.schemas import Token, UserResponse
+from backend.app.models.models import User
+from backend.app.auth.oauth import authenticate_user, create_access_token, get_current_user
+from backend.app.db.database import SessionDep
 
 load_dotenv()
 ACCESS_TOKEN_EXPIRE = int(os.getenv("ACCESS_TOKEN_EXPIRE", 60))

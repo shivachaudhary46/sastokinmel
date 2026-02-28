@@ -1,10 +1,10 @@
 from fastapi import APIRouter, HTTPException, Depends
-from app.db.database import SessionDep
-from app.models.models import User, Product, Offer, Referral
-from app.models.schemas import ProductCreate, ProductResponse, OfferCreate, OfferResponse, ReferralResponse, ReferralCreate
-from app.auth.oauth import role_required
-from app.loggers.logger import logger
-from app.utilities.crud import get_existing_product, create_product, create_offer, get_exisiting_offer, get_existing_referral, create_referral, get_existing_all_product, get_all_offer_on_product
+from backend.app.db.database import SessionDep
+from backend.app.models.models import User, Product, Offer, Referral
+from backend.app.models.schemas import ProductCreate, ProductResponse, OfferCreate, OfferResponse, ReferralResponse, ReferralCreate
+from backend.app.auth.oauth import role_required
+from backend.app.loggers.logger import logger
+from backend.app.utilities.crud import get_existing_product, create_product, create_offer, get_exisiting_offer, get_existing_referral, create_referral, get_existing_all_product, get_all_offer_on_product
 from typing import List
 
 router = APIRouter(

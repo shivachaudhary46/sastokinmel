@@ -1,46 +1,18 @@
 from fastapi import APIRouter, HTTPException, Query, Depends
 from typing import List, Annotated, Optional
+from backend.app.models.models import User
+from backend.app.db.database import SessionDep
+from backend.app.models.schemas import UserCreate, UserResponse
+from backend.app.utilities.crud import ( get_user_by_username, create_user, get_all_users, delete_user_by_id, )
+from backend.app.auth.oauth import get_current_user, authenticate_user
+from pwdlib import PasswordHash 
 
 router = APIRouter(
     prefix="/users",
     tags=["users"]
 )
 
-from app.models.models import User
-from app.db.database import SessionDep
-from app.models.schemas import UserCreate, UserResponse
-from app.utilities.crud import (
-    get_user_by_username, create_user, get_all_users, delete_user_by_id, 
-)
-from app.auth.oauth import get_current_user, authenticate_user
-
-from pwdlib import PasswordHash 
-
 hasher = PasswordHash.recommended()
-
-# @router.post("/admin")
-# def create_admin(session: SessionDep): 
-#    
-#     admin1 = User(
-#         role="admin", 
-#         username=user_data1.username,
-#         email=user_data1.email,
-#         full_name=user_data1.full_name,
-#         password=user_data1.password,
-#     )
-
-#     admin2 = User(
-#         role="admin", 
-#         username=user_data2.username,
-#         email=user_data2.email,
-#         full_name=user_data2.full_name,
-#         password=user_data2.password,
-#     )
-
-#     create1 = create_user(session, admin1)
-#     create2 = create_user(session, admin2)
-
-#     return create1, create2
 
 # Create User
 @router.post("/", response_model=UserResponse)
@@ -72,7 +44,6 @@ def create_new_user(user_data: UserCreate, session: SessionDep):
         print(f"Error creating user: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
-
 @router.put("/", response_model=UserResponse)
 def update_password(
     old_password: str,
@@ -100,7 +71,6 @@ def update_password(
         print(f"Unexpected error while updating user {current_user.id}: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
-
 # Get all users
 @router.get("/", response_model=List[UserResponse])
 def read_all_users(
@@ -118,7 +88,6 @@ def read_all_users(
     except Exception as e:
         print(f"Error while fetching users: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
-
 
 # Get a user by username
 @router.get("/{username}", response_model=UserResponse)

@@ -1,11 +1,11 @@
 from fastapi import APIRouter, HTTPException, Depends
-from app.db.database import SessionDep
+from backend.app.db.database import SessionDep
+from backend.app.models.schemas import MerchantCreate, MerchantResponse
+from backend.app.models.models import User, Merchant
+from backend.app.auth.oauth import role_required
+from backend.app.utilities.crud import get_merchant_by_merchantname, create_merchant, get_all_merchant, get_merchant_by_id, update_merchant, delete_merchant_by_id
+from backend.app.loggers.logger import logger
 from typing import List
-from app.models.schemas import MerchantCreate, MerchantResponse
-from app.models.models import User, Merchant
-from app.auth.oauth import role_required
-from app.utilities.crud import get_merchant_by_merchantname, create_merchant, get_all_merchant, get_merchant_by_id, update_merchant, delete_merchant_by_id
-from app.loggers.logger import logger
 
 router = APIRouter(
     prefix="/merchant",
