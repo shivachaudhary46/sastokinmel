@@ -20,7 +20,6 @@ ALGO = os.getenv("ALGO")
 
 oauth_scheme2 = OAuth2PasswordBearer(tokenUrl="auth/token")
 
-
 def get_user(username: str, session: SessionDep) -> User:
     statement = select(User).where(User.username == username)
     results = session.scalars(statement)
@@ -30,7 +29,6 @@ def get_user(username: str, session: SessionDep) -> User:
         return None
 
     return account
-
 
 def authenticate_user(session: SessionDep, username: str, password: str) :
     user = get_user(username, session)

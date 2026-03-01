@@ -13,6 +13,11 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     FRONTEND_URL: str
 
+    INDEX_NAME_DEFAULT : str
+    INDEX_NAME_EMBEDDING : str 
+    INDEX_NAME_RAW : str 
+    INDEX_NAME_N_GRAM : str 
+
     model_config = {
         "extra": "allow",
         "env_file": str(BASE_DIR / ".env")

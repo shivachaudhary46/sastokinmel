@@ -132,7 +132,7 @@ def get_all_merchant(session: Session) -> Merchant:
     return session.scalars(statement).all()
 
 def get_merchant_by_id(session: Session, merchant_id: str) -> Merchant: 
-    statement = select(Merchant).where(Merchant.merchant_id == merchant_id)
+    statement = select(Merchant).where(Merchant.id == merchant_id)
     return session.scalars(statement).first()
 
 def update_merchant(session: Session, merchant_id: str, merchant_data: MerchantCreate) -> MerchantResponse: 

@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.app.db.database import create_table
 from backend.app.api import (
-    users, auth, categories, product, merchant
+    category, users, auth, product, merchant, search
 )
 
 @asynccontextmanager
@@ -46,9 +46,10 @@ def health_check():
 
 app.include_router(users.router)
 app.include_router(auth.router)
-app.include_router(categories.router)
+app.include_router(category.router)
 app.include_router(product.router)
 app.include_router(merchant.router)
+app.include_router(search.router)
 
 if __name__ == "__main__": 
     import uvicorn

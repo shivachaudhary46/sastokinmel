@@ -5,6 +5,7 @@ from backend.app.models.schemas import ProductCreate, ProductResponse, OfferCrea
 from backend.app.auth.oauth import role_required
 from backend.app.loggers.logger import logger
 from backend.app.utilities.crud import get_existing_product, create_product, create_offer, get_exisiting_offer, get_existing_referral, create_referral, get_existing_all_product, get_all_offer_on_product
+from ..loggers.logger import logger
 from typing import List
 
 router = APIRouter(
@@ -128,3 +129,11 @@ def create_referral_with_product(referral_data: ReferralCreate, session: Session
         print(f"Error creating offer: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
+'''
+API Endpoint
+PRODUCTS
+GET    /products/                  - Get all products
+POST   /products/                  - Create new product
+PUT    /products/{product_id}/     - Update product
+DELETE /products/{product_id}/     - Delete product
+'''

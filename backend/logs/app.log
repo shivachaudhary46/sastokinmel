@@ -1,0 +1,9 @@
+2026-02-02 03:28:34 - sastokinmel - INFO - All users fetched successfully.
+2026-02-25 06:06:11 - sastokinmel - ERROR - Unexpected error while fetching merchant: Mapper 'Mapper[User(user)]' has no property 'referral'.  If this property was indicated from other mappers or configure events, ensure registry.configure() has been called.
+2026-02-25 09:48:22 - sastokinmel - ERROR - Unexpected error while fetching merchant: One or more mappers failed to initialize - can't proceed with initialization of other mappers. Triggering mapper: 'Mapper[Referral(referral)]'. Original exception was: Mapper 'Mapper[User(user)]' has no property 'referral'.  If this property was indicated from other mappers or configure events, ensure registry.configure() has been called.
+2026-03-01 20:30:10 - sastokinmel - INFO - Successfully fetched all merchant
+2026-03-01 21:41:25 - sastokinmel - INFO - Successfully fetched all merchant
+2026-03-01 21:41:41 - sastokinmel - ERROR - Unexpected error while fetching fees: type object 'Merchant' has no attribute 'merchant_id'
+2026-03-01 21:45:07 - sastokinmel - ERROR - Unexpected error while fetching merchant: type object 'Merchant' has no attribute 'idd'
+2026-03-01 21:47:38 - sastokinmel - INFO - Successfully fetched all merchant
+2026-03-01 21:56:54 - sastokinmel - INFO - All category fetched successfully.

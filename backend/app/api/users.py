@@ -6,6 +6,7 @@ from backend.app.models.schemas import UserCreate, UserResponse
 from backend.app.utilities.crud import ( get_user_by_username, create_user, get_all_users, delete_user_by_id, )
 from backend.app.auth.oauth import get_current_user, authenticate_user
 from pwdlib import PasswordHash 
+from ..loggers.logger import logger
 
 router = APIRouter(
     prefix="/users",
@@ -22,7 +23,7 @@ def create_new_user(user_data: UserCreate, session: SessionDep):
 
         existing = get_user_by_username(session, user_data.username)
         if existing:
-            print(f"Username {user_data.username} already exists")
+            logger.warning(f"Username {user_data.username} already exists")
             raise HTTPException(status_code=400, detail="Username already exists")
 
         user = User(
@@ -34,14 +35,14 @@ def create_new_user(user_data: UserCreate, session: SessionDep):
 
         new_user = create_user(session, user)
 
-        print(f"User created successfully: {user_data.username}")
+        logger.info(f"User created successfully: {user_data.username}")
         return new_user
 
     except HTTPException:
         raise
 
     except Exception as e:
-        print(f"Error creating user: {e}")
+        logger.error(f"Error creating user: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 @router.put("/", response_model=UserResponse)
@@ -55,7 +56,7 @@ def update_password(
     try:
         auth_user = authenticate_user(session, current_user.username, old_password)
         if not auth_user:
-            print(f"User {current_user.id} not found for update or password doesn't match")
+            logger.info(f"User {current_user.id} not found for update or password doesn't match")
             raise HTTPException(status_code=404, detail="password does not match")
         
         current_user.password = hasher.hash(new_password)
@@ -63,12 +64,12 @@ def update_password(
         session.commit()
         session.refresh(current_user)
 
-        print(f"password of {current_user.id} updated successfully by user {current_user.id}")
+        logger.info(f"password of {current_user.id} updated successfully by user {current_user.id}")
         return current_user
     except HTTPException:
         raise
     except Exception as e:
-        print(f"Unexpected error while updating user {current_user.id}: {e}")
+        logger.error(f"Unexpected error while updating user {current_user.id}: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 # Get all users
@@ -82,11 +83,11 @@ def read_all_users(
     """Get all users"""
     try:
         all_users = get_all_users(session, role, skip, limit)
-        print("All users fetched successfully.")
+        logger.info("All users fetched successfully.")
         return all_users
 
     except Exception as e:
-        print(f"Error while fetching users: {e}")
+        logger.error(f"Error while fetching users: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 # Get a user by username
@@ -97,17 +98,17 @@ def read_user(username: str, session: SessionDep):
         user = get_user_by_username(session, username)
 
         if not user:
-            print(f"User '{username}' not found")
+            logger.warning(f"User '{username}' not found")
             raise HTTPException(status_code=404, detail="User not found")
 
-        print(f"User '{username}' fetched successfully")
+        logger.info(f"User '{username}' fetched successfully")
         return user
 
     except HTTPException:
         raise
 
     except Exception as e:
-        print(f"Unexpected error fetching user '{username}': {e}")
+        logger.error(f"Unexpected error fetching user '{username}': {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 # Delete a user by username
@@ -118,17 +119,17 @@ def delete_user_by_username(username: str, session: SessionDep):
         user = get_user_by_username(session, username)
 
         if not user:
-            print(f"User '{username}' not found")
+            logger.warning(f"User '{username}' not found")
             raise HTTPException(status_code=404, detail=f"User '{username}' not found")
 
         delete_user_by_id(session, user.id)
 
-        print(f"User '{username}' deleted successfully")
+        logger.info(f"User '{username}' deleted successfully")
         return {"ok": True}
 
     except HTTPException:
         raise
 
     except Exception as e:
-        print(f"Unexpected error while deleting user '{username}': {e}")
+        logger.error(f"Unexpected error while deleting user '{username}': {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")

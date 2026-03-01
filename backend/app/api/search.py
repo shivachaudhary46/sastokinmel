@@ -1,26 +1,41 @@
 import torch
-from config import INDEX_NAME_DEFAULT, INDEX_NAME_EMBEDDING, INDEX_NAME_N_GRAM
+from ..config import settings
 from elastic_transport import ObjectApiResponse
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 from sentence_transformers import SentenceTransformer
-from utils import get_es_client
+from ..utilities.utils import get_es_client
+from ..loggers.logger import logger 
 
-app = FastAPI()
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+router = APIRouter(
+    prefix="/search",
+    tags=["search"]
 )
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = SentenceTransformer("all-MiniLM-L6-v2").to(device)
 
+def get_total_hits(response: ObjectApiResponse) -> int:
+    logger.info(f"Total hits from response {response['hits']['total']['value']}")
+    return response["hits"]["total"]["value"]
 
-@app.get("/api/v1/regular_search/")
+def calculate_max_pages(total_hits: int, limit: int) -> int:
+    logger.info(f"Maximum pages can be sent {(total_hits + limit - 1) // limit}")
+    return (total_hits + limit - 1) // limit
+
+def extract_docs_per_year(response: ObjectApiResponse) -> dict:
+    aggregations = response.get("aggregations", {})
+    docs_per_year = aggregations.get("docs_per_year", {})
+    buckets = docs_per_year.get("buckets", [])
+    logger.info(f"Successfully extracted docs per year")
+    return {bucket["key_as_string"]: bucket["doc_count"] for bucket in buckets}
+
+def handle_error(e: Exception) -> HTMLResponse:
+    error_message = f"An error occurred: {str(e)}"
+    logger.error("Error occured and HTMLResponse is going to handle it {e}")
+    return HTMLResponse(content=error_message, status_code=500)
+
+@router.get("/regular_search/")
 async def regular_search(
     search_query: str,
     skip: int = 0,
@@ -57,7 +72,7 @@ async def regular_search(
             ]
 
         index_name = (
-            INDEX_NAME_DEFAULT if tokenizer == "Standard" else INDEX_NAME_N_GRAM
+            settings.INDEX_NAME_DEFAULT if tokenizer == "Standard" else settings.INDEX_NAME_N_GRAM
         )
         response = es.search(
             index=index_name,
@@ -83,8 +98,7 @@ async def regular_search(
     except Exception as e:
         return handle_error(e)
 
-
-@app.get("/api/v1/semantic_search/")
+@router.get("/semantic_search/")
 async def semantic_search(
     search_query: str, skip: int = 0, limit: int = 10, year: str | None = None
 ) :
@@ -121,7 +135,7 @@ async def semantic_search(
             ]
 
         response = es.search(
-            index=INDEX_NAME_EMBEDDING,
+            index=settings.INDEX_NAME_EMBEDDING,
             body={
                 "query": query,
                 "from": skip,
@@ -144,13 +158,7 @@ async def semantic_search(
     except Exception as e:
         return handle_error(e)
 
-def get_total_hits(response: ObjectApiResponse) -> int:
-    return response["hits"]["total"]["value"]
-
-def calculate_max_pages(total_hits: int, limit: int) -> int:
-    return (total_hits + limit - 1) // limit
-
-@app.get("/api/v1/get_docs_per_year_count/")
+@router.get("/get_docs_per_year_count/")
 async def get_docs_per_year_count(
     search_query: str, tokenizer: str = "Standard"
 ) :
@@ -170,7 +178,7 @@ async def get_docs_per_year_count(
         }
 
         index_name = (
-            INDEX_NAME_DEFAULT if tokenizer == "Standard" else INDEX_NAME_N_GRAM
+            settings.INDEX_NAME_DEFAULT if tokenizer == "Standard" else settings.INDEX_NAME_N_GRAM
         )
         response = es.search(
             index=index_name,
@@ -191,13 +199,3 @@ async def get_docs_per_year_count(
         return {"docs_per_year": extract_docs_per_year(response)}
     except Exception as e:
         return handle_error(e)
-
-def extract_docs_per_year(response: ObjectApiResponse) -> dict:
-    aggregations = response.get("aggregations", {})
-    docs_per_year = aggregations.get("docs_per_year", {})
-    buckets = docs_per_year.get("buckets", [])
-    return {bucket["key_as_string"]: bucket["doc_count"] for bucket in buckets}
-
-def handle_error(e: Exception) -> HTMLResponse:
-    error_message = f"An error occurred: {str(e)}"
-    return HTMLResponse(content=error_message, status_code=500)

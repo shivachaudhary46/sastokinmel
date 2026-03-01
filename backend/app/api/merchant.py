@@ -30,7 +30,7 @@ def create_new_merchant(merchant_data: MerchantCreate, session: SessionDep, user
         logger.debug(f"Merchant instance created {instance}")
         new_merchant = create_merchant(session, instance)
 
-        logger.debug(f"Merchant created successfully: {Merchant.name}")
+        logger.info(f"Merchant created successfully: {Merchant.name}")
         return new_merchant
 
     except HTTPException:
@@ -63,7 +63,7 @@ def get_merchant_by_id_endpoints(session: SessionDep, merchant_id: int):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Unexpected error while fetching fees: {e}")
+        logger.error(f"Unexpected error while fetching merchant: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 # Update Merchant

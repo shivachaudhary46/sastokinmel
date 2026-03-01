@@ -3,9 +3,9 @@ from backend.app.db.database import SessionDep
 from backend.app.models.schemas import CategoryCreate, CategoryResponse
 from backend.app.models.models import User, Category
 from backend.app.auth.oauth import role_required
-from backend.app.utilities.crud import get_category_by_name, create_category, get_all_products_by_category
+from backend.app.utilities.crud import get_category_by_name, create_category, get_all_category
 from backend.app.loggers.logger import logger
-from typing import Annotated
+from typing import List
 
 router = APIRouter(
     prefix="/categories",
@@ -39,30 +39,29 @@ def create_new_category(category_data: CategoryCreate, session: SessionDep, user
         print(f"Error creating categories: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
+# Get all category listed on this 
+@router.get("/", response_model=List[CategoryResponse])
+def read_all_category(session: SessionDep):
+    """Get all Category"""
+    try: 
+        all_category = get_all_category(session)
+        logger.info("All category fetched successfully.")
+        return all_category
+    except Exception as e: 
+        logger.error(f"Error while fetching categories: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
-# # Testing phase 
-# @router.get("/", response_model=List[CategoryResponse])
-# def read_all_category(session: SessionDep):
-#     """Get all Category"""
-#     try: 
-#         all_category = get_all_category(session)
-#         logger.debug("All category fetched successfully.")
-#         return all_category
-#     except Exception as e: 
-#         logger.debug(f"Error while fetching categories: {e}")
-#         raise HTTPException(status_code=500, detail="Internal Server Error")
+# Get category page by slug (testing phase)
+# Need to add Pagination (page & limit) controls how many products are returned
+@router.get("/{slug}", response_class=List[CategoryResponse])
+def get_category_by_slug(slug: str, session: SessionDep): 
+    pass 
 
-# # Get category page by slug (testing phase)
-# # Slug is used for SEO-friendly URLs
-# # Base URL: /categories/{slug}
-# # Example: /categories/skin-care
-# # Slug identifies the category whose products we want to fetch
-# # Pagination (page & limit) controls how many products are returned
-
-# # Slug uses is base_url/categories/{slug} here, slug = skin-care, lip-balm, slug should be meaningful in realworld, and permanent 
-# # here, we will assume slug as categories, so we will try to fetch every product in that slug (category), 
-# @router.get("/categories/{slug}")
-# def get_product_from_slug(
+# Slug uses is base_url/categories/{slug} here, slug = skin-care, lip-balm, slug should be meaningful in realworld, and permanent 
+# we will assume slug as categories, so we will try to fetch every product in that slug (category), 
+# Pagination, limitation 
+# @router.get("/{slug}/product")
+# def get_all_product_from_slug(
 #     session: SessionDep,
 #     page: int = 1,
 #     skip: int = 0,
@@ -78,12 +77,8 @@ def create_new_category(category_data: CategoryCreate, session: SessionDep, user
 #         logger.error(f"Error while fetching users: {e}")
 #         raise HTTPException(status_code=500, detail="Internal Server Error")
 
-
-# # POST request creating the categories for only admin 
-# # READ all categories 
-# # Access Category page by slug (SEO handling)
-# # READ how many products under a category 
-# @router.get("/categories/{slug}/product")
+# Total count of product listed on that slug / categories 
+# @router.get("/{slug}/product/total")
 # def get_total_product_under_categories(session: SessionDep, page: int = 1, skip: int = 0, limit: Annotated[int, Query(le=100)] = 100):
 #     try: 
 #         total_product = get_total_count_product(session, skip, limit)
@@ -92,16 +87,17 @@ def create_new_category(category_data: CategoryCreate, session: SessionDep, user
 #     except Exception as e: 
 #         raise HTTPException (status_code=500, detail="Internal Server Error")
 
-# # Admin-only update (name only, never slug)
-# # Get category page by slug 
+# Update categories (name only, slug will be never updated, admin only)
 
-# # Get products inside a category (with pagination)
-# # Get product page by slug 
+'''
+API Endpoints for categories
 
-# # Homepage -> GET / categories
-# # Category page 
-# # GET /categories/{slug}
-# # GET /categories/{slug}/products
-# # product page 
-# # Get / products/{slug}
-# # Get / products/{slug}/offers
+POST - / (create new category)
+GET - /  (return all categories)
+GET - /{slug}/ (get category page by slug)
+GET - /{slug}/product (get all product from slug / categories)
+GET - /{slug}/product/total (total count of product from that slug)
+
+GET - /{slug}/product/offers (return all products offers with categories)
+'''
+
