@@ -18,6 +18,13 @@ router = APIRouter(
     tags=["authentication"]
 )
 
+'''
+API Endpoints for authorization
+
+POST - /auth/token/         -(create new bearer token)
+GET - /auth/me              -(return current user)
+'''
+
 @router.post("/token", response_model=Token)
 async def login(
     credentials: Annotated[OAuth2PasswordRequestForm, Depends()],

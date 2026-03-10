@@ -12,6 +12,23 @@ router = APIRouter(
     tags=["search"]
 )
 
+'''
+API Endpoints — Search Router
+SEARCH
+
+GET    /search/regular_search/         - Keyword/multi-match search (title, description)
+         ?query, ?skip, ?limit, ?year, ?tokenizer
+
+GET    /search/semantic_search/        - KNN/embedding vector search
+         ?query, ?skip, ?limit, ?year
+
+POST   /search/                        - Index a new product into all 3 indexes
+         body: { title, description, price, ... }
+         auto-generates embedding → indexes into default + n-gram + embedding
+
+DELETE /search/{doc_id}/               - Remove product from default index only
+'''
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = SentenceTransformer("all-MiniLM-L6-v2").to(device)
 

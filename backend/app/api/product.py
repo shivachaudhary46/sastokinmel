@@ -13,6 +13,15 @@ router = APIRouter(
     tags=["product"]
 )
 
+'''
+API Endpoint products 
+PRODUCTS
+GET    /products/                  - Get all products
+POST   /products/                  - Create new product
+PUT    /products/{product_id}/     - Update product
+DELETE /products/{product_id}/     - Delete product
+'''
+
 @router.post("/", response_model=ProductResponse)
 def create_new_product(product_data: ProductCreate, session: SessionDep, user: User = Depends(role_required(["admin"]))):
     """Create a new category for admin only access"""
@@ -128,12 +137,3 @@ def create_referral_with_product(referral_data: ReferralCreate, session: Session
     except Exception as e:
         print(f"Error creating offer: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
-
-'''
-API Endpoint
-PRODUCTS
-GET    /products/                  - Get all products
-POST   /products/                  - Create new product
-PUT    /products/{product_id}/     - Update product
-DELETE /products/{product_id}/     - Delete product
-'''

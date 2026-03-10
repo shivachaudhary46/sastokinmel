@@ -12,6 +12,16 @@ router = APIRouter(
     tags=["merchant"]
 )
 
+'''
+API Endpoints for merchant 
+
+POST - /merchant/                    -(create new merchant)
+GET - /merchant/                     -(return all merchant)
+GET - /merchant/{merchant_id}/       -(get merchant by merchant_id)
+PUT - /merchant/{merchant_id}/       -(Update merchant by merchant_id)
+DELETE - /merchant/{merchant_id}     -(return all products offers with categories)
+'''
+
 @router.post("/", response_model=MerchantResponse)
 def create_new_merchant(merchant_data: MerchantCreate, session: SessionDep, user: User = Depends(role_required(["admin"]))):
     """Create a new merchant for admin only access"""
@@ -77,8 +87,9 @@ def update_merchant_endpoints(
     try:
         merchant = update_merchant(session, merchant_id, merchant_data)
         if not merchant:
-            logger.warning(f"Successfully updated merchant for {merchant_id}")
+            logger.warning(f"Merchant not found for {merchant_id}")
             raise HTTPException(status_code=404, detail="merchant not found")
+        logger.info(f"Merchant update successfully for merchant id{merchant_id}")
         return merchant
     except HTTPException:
         raise

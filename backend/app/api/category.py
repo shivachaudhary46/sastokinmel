@@ -1,3 +1,15 @@
+'''
+API Endpoints for categories
+
+POST - /categories (create new category)
+GET - /categories  (return all categories)
+GET - /categories/{slug}/ (get category page by slug)
+GET - /categories/{slug}/product (get all product from slug / categories)
+GET - /categories/{slug}/product/total (total count of product from that slug)
+
+GET - /categories/{slug}/product/offers (return all products offers with categories)
+'''
+
 from fastapi import APIRouter, HTTPException, Depends, Query
 from backend.app.db.database import SessionDep
 from backend.app.models.schemas import CategoryCreate, CategoryResponse
@@ -89,15 +101,4 @@ def get_category_by_slug(slug: str, session: SessionDep):
 
 # Update categories (name only, slug will be never updated, admin only)
 
-'''
-API Endpoints for categories
-
-POST - / (create new category)
-GET - /  (return all categories)
-GET - /{slug}/ (get category page by slug)
-GET - /{slug}/product (get all product from slug / categories)
-GET - /{slug}/product/total (total count of product from that slug)
-
-GET - /{slug}/product/offers (return all products offers with categories)
-'''
 

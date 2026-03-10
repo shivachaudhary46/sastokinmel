@@ -15,6 +15,15 @@ router = APIRouter(
 
 hasher = PasswordHash.recommended()
 
+'''
+USERS 
+GET    /users/                  - Get all username
+GET    /users/{username}        - Get userdetails by username 
+POST   /users/                  - Create new users
+PUT    /users/                  - Update referral
+DELETE /users/{username}        - Delete referral
+'''
+
 # Create User
 @router.post("/", response_model=UserResponse)
 def create_new_user(user_data: UserCreate, session: SessionDep):
